@@ -90,8 +90,34 @@ public class HashTable<E extends Comparable<E>> {
      *         underlying array; false otherwise.
      */
     public boolean contains(E target) {
+        int position = Math.abs(target.hashCode()) % this.underlying.length;
+        Node<E> cursor = this.underlying[position];
+
+
+        while (cursor != null){
+            if (cursor.getContent().compareTo(target) == 0){
+                return true;
+            }
+            cursor = cursor.getNext();
+        }
         return false;
     } // method contains
+
+    private void rehash() {
+        Node<E>[] oldArray = this.underlying;
+        this.underlying = new Node[oldArray.length * 2];
+        this.usage = 0;
+        this.totalNodes = 0;
+
+        for (Node<E> head : oldArray) {
+            Node<E> cursor = head;
+            while (cursor != null) {
+                E content = cursor.getContent();
+                this.add(content); //resuing add() method to insert outputs into new table
+                cursor = cursor.getNext();
+            }
+        }
+    }
 
     /** Constants for toString */
     private static final String LINKED_LIST_HEADER = "\n[ %2d ]: ";
